@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.GenerationType;
@@ -16,8 +19,11 @@ import jakarta.persistence.Id;
 
 import lombok.Data;
 
-@Entity(name = "job")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "job")
 public class JobEntity {
 
     @Id
@@ -26,7 +32,7 @@ public class JobEntity {
     private String description;
     private String benefits;
 
-    @NotBlank(message = "Esse campo é obrigatório")
+    @NotBlank(message = "This field is mandatory")
     private String level;
 
     @ManyToOne()
