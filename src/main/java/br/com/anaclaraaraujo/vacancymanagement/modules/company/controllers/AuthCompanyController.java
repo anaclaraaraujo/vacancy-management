@@ -2,7 +2,6 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.company.controllers;
 
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.dto.AuthCompanyDTO;
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.useCases.AuthCompanyUseCase;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.PostMapping;

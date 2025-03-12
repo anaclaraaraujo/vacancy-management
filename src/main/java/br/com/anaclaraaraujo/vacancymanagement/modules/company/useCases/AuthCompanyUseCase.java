@@ -1,6 +1,7 @@
 package br.com.anaclaraaraujo.vacancymanagement.modules.company.useCases;
 
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.dto.AuthCompanyDTO;
+import br.com.anaclaraaraujo.vacancymanagement.modules.company.dto.AuthCompanyResponseDTO;
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.repositories.CompanyRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +15,7 @@ import com.auth0.jwt.JWT;
 import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 
 @Service
 public class AuthCompanyUseCase {
@@ -27,9 +29,10 @@ public class AuthCompanyUseCase {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String execute(AuthCompanyDTO authCompanyDTO) throws AuthenticationException {
-        var company = companyRepository.findByUsername(authCompanyDTO.getUsername())
-                .orElseThrow( () -> new UsernameNotFoundException("Username/password incorrect"));
+    public AuthCompanyResponseDTO execute(AuthCompanyDTO authCompanyDTO) throws AuthenticationException {
+        var company = this.companyRepository.findByUsername(authCompanyDTO.getUsername()).orElseThrow(() -> {
+            throw new UsernameNotFoundException("Username/password incorrect");
+        });
 
         var passwordMatches = this.passwordEncoder.matches(authCompanyDTO.getPassword(), company.getPassword());
 
@@ -39,8 +42,19 @@ public class AuthCompanyUseCase {
 
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
 
-        return JWT.create().withIssuer("javagas")
-                .withExpiresAt(Instant.now().plus(Duration.ofHours(2)))
-                .withSubject(company.getId().toString()).sign(algorithm);
+        var expiresIn = Instant.now().plus(Duration.ofMinutes(10));
+
+        var token = JWT.create().withIssuer("javagas")
+                .withExpiresAt(expiresIn)
+                .withSubject(company.getId().toString())
+                .withClaim("roles", Arrays.asList("COMPANY"))
+                .sign(algorithm);
+
+        var authCompanyResponseDTO = AuthCompanyResponseDTO.builder()
+                .access_token(token)
+                .expires_in(expiresIn.toEpochMilli())
+                .build();
+
+        return authCompanyResponseDTO;
     }
 }
