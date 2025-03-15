@@ -3,6 +3,7 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.company.entities;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +30,15 @@ public class JobEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Schema(example = "Vaga para design")
     private String description;
+
+    @Schema(example = "GymPass, Plano de saúde")
     private String benefits;
 
     @NotBlank(message = "This field is mandatory")
+    @Schema(example = "SENIOR")
     private String level;
 
     @ManyToOne()
