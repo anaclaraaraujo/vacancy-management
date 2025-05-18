@@ -2,8 +2,10 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.company.controllers;
 
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.dto.CreateJobDTO;
 
+import br.com.anaclaraaraujo.vacancymanagement.modules.company.entities.CompanyEntity;
+import br.com.anaclaraaraujo.vacancymanagement.modules.company.repositories.CompanyRepository;
 import br.com.anaclaraaraujo.vacancymanagement.utils.TestUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.UUID;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CreateJobControllerTest {
@@ -28,6 +28,9 @@ public class CreateJobControllerTest {
 
     @Autowired
     private WebApplicationContext context;
+
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Before
     public void setup(){
@@ -39,6 +42,14 @@ public class CreateJobControllerTest {
     @Test
     public void should_be_able_to_create_a_new_job() throws Exception{
 
+        var company = CompanyEntity.builder()
+                .description("COMPANY_DESCRIPTION")
+                .email("email@company.com")
+                .password("1234567890")
+                .username("COMPANY_USERNAME")
+                .name("COMPANY_NAME").build();
+
+        company = companyRepository.saveAndFlush(company);
 
         var createdJobDTO = CreateJobDTO.builder()
                 .benefits("BENEFITS_TEST")
@@ -49,19 +60,10 @@ public class CreateJobControllerTest {
         var result = mvc.perform(MockMvcRequestBuilders.post("/company/job/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.objectToJson(createdJobDTO))
-                        .header("Authorization", TestUtils.generateToken(UUID.fromString("44d85c7b-33b4-4142-bd87-cb532b9b2deb"), "JAVAGAS_@123#"))
+                        .header("Authorization", TestUtils.generateToken(company.getId(), "JAVAGAS_@123#"))
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         System.out.println(result);
-    }
-
-    private static String objectToJson(Object obj){
-        try{
-            final ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(obj);
-        }catch(Exception e){
-            throw new RuntimeException(e);
-        }
     }
 }
