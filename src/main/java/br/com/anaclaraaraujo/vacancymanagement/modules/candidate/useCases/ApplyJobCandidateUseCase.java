@@ -3,6 +3,7 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.candidate.useCases;
 import br.com.anaclaraaraujo.vacancymanagement.exceptions.JobNotFoundException;
 import br.com.anaclaraaraujo.vacancymanagement.exceptions.UserNotFoundException;
 import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.CandidateRepository;
+import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.entity.ApplyJobEntity;
 import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.repository.ApplyJobRepository;
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.repositories.JobRepository;
 
@@ -24,7 +25,7 @@ public class ApplyJobCandidateUseCase {
     @Autowired
     private ApplyJobRepository applyJobRepository;
 
-    public void execute(UUID idCandidate, UUID idJob) {
+    public ApplyJobEntity execute(UUID idCandidate, UUID idJob) {
          // VALIDAR SE O CANDIDATO EXISTE
         this.candidateRepository.findById(idCandidate)
                 .orElseThrow(UserNotFoundException::new);
@@ -34,6 +35,11 @@ public class ApplyJobCandidateUseCase {
                 .orElseThrow(JobNotFoundException::new);
 
         // CANDIDATO SE INSCREVE NA VAGA
+        var applyJob = ApplyJobEntity.builder()
+                .candidateId(idCandidate)
+                .jobId(idJob).build();
 
+        applyJob = applyJobRepository.save(applyJob);
+        return applyJob;
     }
 }
