@@ -39,16 +39,21 @@ public class JobController {
             })
     })
     @SecurityRequirement(name = "jwt_auth")
-    public JobEntity create(@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
+    public ResponseEntity<Object> create(@Valid @RequestBody CreateJobDTO createJobDTO, HttpServletRequest request) {
         var companyId = request.getAttribute("company_id");
 
-        var jobEntity = JobEntity.builder()
+        try{
+            var jobEntity = JobEntity.builder()
                 .benefits(createJobDTO.getBenefits())
                 .companyId(UUID.fromString(companyId.toString()))
                 .description(createJobDTO.getDescription())
                 .level(createJobDTO.getLevel())
                 .build();
 
-        return createJobUseCase.execute(jobEntity);
+            var result = this.createJobUseCase.execute(jobEntity);
+            return ResponseEntity.ok().body(result);
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
