@@ -2,8 +2,8 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.candidate.useCases;
 
 import java.util.UUID;
 
+import br.com.anaclaraaraujo.vacancymanagement.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.CandidateRepository;
@@ -17,7 +17,7 @@ public class ProfileCandidateUseCase {
     public ProfileCandidateResponseDTO execute(UUID idCandidate) {
         var candidate = this.candidateRepository.findById(idCandidate)
                 .orElseThrow(() -> {
-                    throw new UsernameNotFoundException("User not found");
+                    throw new UserNotFoundException();
                 });
 
         var candidateDTO = ProfileCandidateResponseDTO.builder()
