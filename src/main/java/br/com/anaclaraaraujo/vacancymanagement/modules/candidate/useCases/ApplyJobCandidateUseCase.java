@@ -3,6 +3,7 @@ package br.com.anaclaraaraujo.vacancymanagement.modules.candidate.useCases;
 import br.com.anaclaraaraujo.vacancymanagement.exceptions.JobNotFoundException;
 import br.com.anaclaraaraujo.vacancymanagement.exceptions.UserNotFoundException;
 import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.CandidateRepository;
+import br.com.anaclaraaraujo.vacancymanagement.modules.candidate.repository.ApplyJobRepository;
 import br.com.anaclaraaraujo.vacancymanagement.modules.company.repositories.JobRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class ApplyJobCandidateUseCase {
     @Autowired
     private JobRepository jobRepository;
 
+    @Autowired
+    private ApplyJobRepository applyJobRepository;
+
     public void execute(UUID idCandidate, UUID idJob) {
          // VALIDAR SE O CANDIDATO EXISTE
         this.candidateRepository.findById(idCandidate)
@@ -28,7 +32,6 @@ public class ApplyJobCandidateUseCase {
         // VALIDAR SE A VAGA EXISTE
         this.jobRepository.findById(idJob)
                 .orElseThrow(JobNotFoundException::new);
-
 
         // CANDIDATO SE INSCREVE NA VAGA
 
